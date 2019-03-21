@@ -20,38 +20,97 @@ express.static.mime.types['wasm'] = 'application/wasm';
 
 console.log("express initialized...");
 
-var Nightmare = require('nightmare');
-var path = require('path');
+console.log("... initialization complete!");
+
+// see https://github.com/segmentio/nightmare/issues/224 RE xvfb
+const Nightmare = require('nightmare')
+const path = require('path');
+const Xvfb = require('xvfb')
 
 require('nightmare-download-manager')(Nightmare);
-var nightmare = Nightmare({
-  waitTimeout: 1000000000,
-  downloadTimeout: 1000000000,
-  paths: { 'downloads': process.argv[3] }
-});
 
-nightmare.on('download', function(state, downloadItem){
-  if(state == 'started'){
-    nightmare.emit('download', 'continue', downloadItem);
-    console.log('download:', path.basename(downloadItem['path']));
+main().catch(console.error)
+
+// main function
+async function main() {
+  const close = await xvfb()
+  const nightmare = Nightmare({
+    waitTimeout: 1000000000,
+    downloadTimeout: 1000000000,
+    paths: { 'downloads': process.argv[3] }
+  })
+
+  const [err, title] = await poss(run(nightmare))
+  if (err) {
+    // cleanup properly
+    await nightmare.end()
+    await close()
+    throw err
   }
-});
 
-nightmare.on('console', console.log.bind(console));
+  console.log(title)
 
-console.log("nightmare initialized...");
-
-var cmd = "nightmare.downloadManager().goto('" + process.argv[4] + "')";
-
-for(i = 5; i < process.argv.length; ++i) {
-  cmd += (".wait('" + process.argv[i] + "')");
-  cmd += (".click('" + process.argv[i] + "')");
+  // shut'er down
+  await nightmare.end()
+  await close()
 }
 
-cmd += ".wait(1000000000).then(() => { console.log('done!'); });"
+// run nightmare
+//
+// put all your nightmare commands in here
+async function run(nightmare) {
 
-console.log("evaluating command:", cmd);
-"use strict";
-eval(cmd);
+  nightmare.on('download', function(state, downloadItem){
+    if(state == 'started'){
+      nightmare.emit('download', 'continue', downloadItem);
+      console.log('download:', path.basename(downloadItem['path']));
+    }
+  });
 
-console.log("... initialization complete!");
+  nightmare.on('console', console.log.bind(console));
+
+  console.log("nightmare initialized...");
+
+  var cmd = "nightmare.downloadManager().goto('" + process.argv[4] + "')";
+
+  for(i = 5; i < process.argv.length; ++i) {
+    cmd += (".wait('" + process.argv[i] + "')");
+    cmd += (".click('" + process.argv[i] + "')");
+  }
+
+  cmd += ".wait(1000000000).then(() => { console.log('done!'); });"
+
+  console.log("evaluating command:", cmd);
+  "use strict";
+  eval(cmd);
+
+  await nightmare.wait(1000000000);
+  const title = await nightmare.title()
+  return title
+
+}
+
+// xvfb wrapper
+function xvfb(options) {
+  var xvfb = new Xvfb(options)
+
+  function close() {
+    return new Promise((resolve, reject) => {
+      xvfb.stop(err => (err ? reject(err) : resolve()))
+    })
+  }
+
+  return new Promise((resolve, reject) => {
+    xvfb.start(err => (err ? reject(err) : resolve(close)))
+  })
+}
+
+// try/catch helper
+async function poss(promise) {
+  try {
+    const result = await promise
+    return [null, result]
+  } catch (err) {
+    return [err, null]
+  }
+}
