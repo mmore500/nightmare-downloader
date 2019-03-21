@@ -33,12 +33,14 @@ nightmare.on('download', function(state, downloadItem){
   }
 });
 
-nightmare
-  .downloadManager()
-  .goto(process.argv[4])
-  .wait(process.argv[5])
-  .click(process.argv[5])
-  .wait(process.argv[6])
-  .click(process.argv[6])
-  .wait(1000000000)
-  .then(() => { console.log('done!'); });
+var cmd = "nightmare.downloadManager().goto('" + process.argv[4] + "')";
+
+for(i = 5; i < process.argv.length; ++i) {
+  cmd += (".wait('" + process.argv[i] + "')");
+  cmd += (".click('" + process.argv[i] + "')");
+}
+
+cmd += ".wait(1000000000).then(() => { console.log('done!'); });"
+
+"use strict";
+eval(cmd);
