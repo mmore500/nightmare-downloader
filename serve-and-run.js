@@ -33,6 +33,9 @@ nightmare.on('download', function(state, downloadItem){
   }
 });
 
+nightmare.on('console', console.log.bind(console));
+
+
 var cmd = "nightmare.downloadManager().goto('" + process.argv[4] + "')";
 
 for(i = 5; i < process.argv.length; ++i) {
