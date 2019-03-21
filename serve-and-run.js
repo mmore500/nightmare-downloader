@@ -50,6 +50,7 @@ for(i = 5; i < process.argv.length; ++i) {
 
 cmd += ".wait(1000000000).then(() => { console.log('done!'); });"
 
+console.log("evaluating command:", cmd);
 "use strict";
 eval(cmd);
 
