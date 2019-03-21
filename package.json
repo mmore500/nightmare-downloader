@@ -1,0 +1,17 @@
+{
+  "name": "nightmare-runner",
+  "description": "Run webpages in a Singularity container.",
+  "version": "0.0.0",
+  "maintainers": [
+    {
+      "name": "Matthew Andres Moreno",
+      "email": "m.more500@gmail.com",
+      "web": "https://mmore500.github.io"
+    }
+  ],
+  "dependencies": {
+    "nightmare": "^3.0.1",
+    "nightmare-download-manager": "^0.2.5",
+    "express": "^4.16.4"
+  }
+}
