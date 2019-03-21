@@ -9,12 +9,16 @@ for(i = 5; i < process.argv.length; ++i) {
   console.log("wait and click:", process.argv[i]);
 }
 
+console.log("beginning initialization...");
+
 var express = require('express');
 var app = express();
 
 app.use(express.static(process.argv[2]));
 app.listen(3000);
 express.static.mime.types['wasm'] = 'application/wasm';
+
+console.log("express initialized...");
 
 var Nightmare = require('nightmare');
 var path = require('path');
@@ -35,6 +39,7 @@ nightmare.on('download', function(state, downloadItem){
 
 nightmare.on('console', console.log.bind(console));
 
+console.log("nightmare initialized...");
 
 var cmd = "nightmare.downloadManager().goto('" + process.argv[4] + "')";
 
@@ -47,3 +52,5 @@ cmd += ".wait(1000000000).then(() => { console.log('done!'); });"
 
 "use strict";
 eval(cmd);
+
+console.log("... initialization complete!");
