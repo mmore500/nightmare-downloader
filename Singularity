@@ -4,7 +4,7 @@ Includecmd: no
 
 %labels
 Maintainer Matthew Andres Moreno
-Version 0.1.0
+Version 0.0.0
 
 ################################################################################
 # Copy Files Into the Container
