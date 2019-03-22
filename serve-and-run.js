@@ -2,10 +2,15 @@ console.log("serve from:", process.argv[2]);
 
 console.log("output to:", process.argv[3]);
 
-console.log("browse to:", process.argv[4]);
+console.log("using port:", process.argv[4]);
+
+console.log(
+  "browse to:",
+  "http://localhost:" + process.argv[4] + "/" + process.argv[5]
+);
 
 var i;
-for(i = 5; i < process.argv.length; ++i) {
+for(i = 6; i < process.argv.length; ++i) {
   console.log("wait and click:", process.argv[i]);
 }
 
@@ -15,7 +20,7 @@ var express = require('express');
 var app = express();
 
 app.use(express.static(process.argv[2]));
-app.listen(3000);
+app.listen(parseInt(process.argv[4]));
 express.static.mime.types['wasm'] = 'application/wasm';
 
 console.log("express initialized...");
@@ -71,9 +76,13 @@ async function run(nightmare) {
 
   console.log("nightmare initialized...");
 
-  var cmd = "nightmare.downloadManager().goto('" + process.argv[4] + "')";
+  var cmd = (
+    "nightmare.downloadManager().goto('"
+    + "http://localhost:" + process.argv[4] + "/" + process.argv[5]
+    + "')"
+  );
 
-  for(i = 5; i < process.argv.length; ++i) {
+  for(i = 6; i < process.argv.length; ++i) {
     cmd += (".wait('" + process.argv[i] + "')");
     cmd += (".click('" + process.argv[i] + "')");
   }
