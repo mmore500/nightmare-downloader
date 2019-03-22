@@ -15,6 +15,11 @@ For example,
 singularity run nightmare-downloader.simg ~/Projects/dishtiny/web $(pwd) $(python -c 'import socket; s=socket.socket(); s.bind(("", 0)); print(s.getsockname()[1]); s.close()') "dishtiny.html" "#download_input" "#Animate"
 ```
 
+Run using the pre-built container from SingularityHub!
+```
+singularity run shub://mmore500/nightmare-downloader ~/Projects/dishtiny/web $(pwd) $(python -c 'import socket; s=socket.socket(); s.bind(("", 0)); print(s.getsockname()[1]); s.close()') "dishtiny.html" "#download_input" "#Animate"
+```
+
 ## Authorship
 
 `m.more500@gmail.com`
